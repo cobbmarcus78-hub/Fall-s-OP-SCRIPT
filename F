@@ -1,7 +1,8 @@
 -- ===================== WHITELIST =====================
 local whitelistedUsers = {
-    "Davlinreed13",
+    "davlinreed13",
     "quixotic812"
+    "Hayshyj"
 }
 
 local Players = game:GetService("Players")
