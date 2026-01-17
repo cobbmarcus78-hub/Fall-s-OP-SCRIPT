@@ -146,7 +146,6 @@ local function createESPForPlayer(plr)
 	if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
 	local hrp = plr.Character.HumanoidRootPart
 
-	-- Box
 	local box = Instance.new("BoxHandleAdornment")
 	box.Adornee = hrp
 	box.Size = Vector3.new(4,6,2)
@@ -155,7 +154,6 @@ local function createESPForPlayer(plr)
 	box.AlwaysOnTop = true
 	box.Parent = espFolder
 
-	-- Name Billboard
 	local billboard = Instance.new("BillboardGui")
 	billboard.Adornee = hrp
 	billboard.Size = UDim2.new(0,200,0,50)
@@ -253,13 +251,12 @@ player.CharacterAdded:Connect(function(c)
 	if antiRagdollMenu then task.wait(1) enableRagdollMenu(c) end
 end)
 
--- ===================== ZOOM BOOSTER MENU =====================
+-- ===================== ZOOM BOOSTER (TOGGLE ONLY) =====================
 local zoomMenu = Instance.new("Frame")
 zoomMenu.Size = UDim2.new(0,200,0,80)
 zoomMenu.Position = UDim2.new(0.58,-100,0.5,200)
 zoomMenu.BackgroundColor3 = Color3.fromRGB(30,30,30)
 zoomMenu.BorderSizePixel = 0
-zoomMenu.Visible = true
 zoomMenu.Parent = screenGui
 Instance.new("UICorner",zoomMenu).CornerRadius = UDim.new(0,12)
 
@@ -272,38 +269,49 @@ zoomTitle.Font = Enum.Font.GothamBold
 zoomTitle.TextScaled = true
 
 local zoomButton = createButton("Enable Zoom",35,zoomMenu)
+
 local zoomActive = false
-local zoomSpeed = 54
+local zoomSpeed = 55
 
-zoomButton.MouseButton1Click:Connect(function()
-	zoomActive = not zoomActive
-	zoomButton.Text = (zoomActive and "Disable Zoom" or "Enable Zoom")
-	notify("Zoom Booster: "..(zoomActive and "ON" or "OFF"))
-end)
-
-UserInputService.InputBegan:Connect(function(input,gpe)
-	if gpe then return end
-	if input.KeyCode == Enum.KeyCode.Z and zoomActive then
+local function startZoom()
+	RunService:BindToRenderStep("ZoomBoost", Enum.RenderPriority.Character.Value, function()
 		local char = player.Character
-		if char then
-			local hrp = char:FindFirstChild("HumanoidRootPart")
-			if hrp then
-				RunService:BindToRenderStep("ZoomSpeed", Enum.RenderPriority.Character.Value, function()
-					if zoomActive then
-						local dir = hrp.CFrame.LookVector
-						hrp.AssemblyLinearVelocity = Vector3.new(dir.X*zoomSpeed, hrp.AssemblyLinearVelocity.Y, dir.Z*zoomSpeed)
-					else
-						RunService:UnbindFromRenderStep("ZoomSpeed")
-					end
-				end)
+		if not char then return end
+		local hrp = char:FindFirstChild("HumanoidRootPart")
+		if hrp then
+			local moveDir = char.Humanoid.MoveDirection
+			if moveDir.Magnitude > 0 then
+				hrp.AssemblyLinearVelocity = Vector3.new(
+					moveDir.X * zoomSpeed,
+					hrp.AssemblyLinearVelocity.Y,
+					moveDir.Z * zoomSpeed
+				)
 			end
 		end
-	end
-end)
+	end)
+end
 
-UserInputService.InputEnded:Connect(function(input,gpe)
+local function stopZoom()
+	RunService:UnbindFromRenderStep("ZoomBoost")
+end
+
+local function toggleZoom()
+	zoomActive = not zoomActive
+	zoomButton.Text = zoomActive and "Disable Zoom" or "Enable Zoom"
+	notify("Zoom Booster: "..(zoomActive and "ON" or "OFF"))
+	if zoomActive then
+		startZoom()
+	else
+		stopZoom()
+	end
+end
+
+zoomButton.MouseButton1Click:Connect(toggleZoom)
+
+UserInputService.InputBegan:Connect(function(input, gpe)
+	if gpe then return end
 	if input.KeyCode == Enum.KeyCode.Z then
-		RunService:UnbindFromRenderStep("ZoomSpeed")
+		toggleZoom()
 	end
 end)
 
