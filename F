@@ -1,14 +1,24 @@
 -- ===================== WHITELIST =====================
 local whitelistedUsers = {
     "davlinreed13",
-    "quixotic812"
+    "quixotic812",
     "Hayshyj"
 }
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
-if not table.find(whitelistedUsers, player.Name) then
+-- Case-insensitive check
+local playerNameLower = player.Name:lower()
+local isWhitelisted = false
+for _, name in ipairs(whitelistedUsers) do
+    if name:lower() == playerNameLower then
+        isWhitelisted = true
+        break
+    end
+end
+
+if not isWhitelisted then
     player:Kick("Not whitelisted")
     return
 end
