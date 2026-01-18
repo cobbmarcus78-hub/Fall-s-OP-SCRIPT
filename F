@@ -7,7 +7,7 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
-local PASSWORD = "Falls"
+local PASSWORD = "Falls" -- <-- updated password
 local AUTO_UNLOCK_USERS = {
 	"davlinreed13",
 	"Stfztsydtsts3334",
@@ -50,7 +50,7 @@ if unlocked then
 		end)
 	end)
 else
-	-- Password GUI (unchanged)
+	-- Password GUI
 	local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 	gui.Name = "PasswordGui"
 
@@ -439,4 +439,4 @@ mainButton.MouseButton1Click:Connect(function()
 	menu.Visible = not menu.Visible
 end)
 
-print("✅ Fall's Hub Loaded (Password, Multi-User Auto-Unlock, ESP, Glowy X-Ray, Speed, Zoom, Ragdoll, Kick, Allow Friends)")
+print("✅ Fall's Hub Loaded (Password: Falls, Multi-User Auto-Unlock, ESP, Glowy X-Ray, Speed, Zoom, Ragdoll, Kick, Allow Friends)")
