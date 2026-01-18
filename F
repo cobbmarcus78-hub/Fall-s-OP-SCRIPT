@@ -1,6 +1,6 @@
 -- ======================================================
 -- FALL'S HUB – FULL UPDATED SCRIPT
--- Password Protected + Auto Unlock + Glowy UI + Optimized ESP + X-Ray
+-- Password Protected + Auto Unlock (Multi-User) + Notification + Glowy UI + Optimized ESP + X-Ray
 -- ======================================================
 
 -- ===================== PASSWORD SYSTEM =====================
@@ -8,10 +8,49 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 local PASSWORD = "Fallsmypapi"
-local AUTO_UNLOCK = "davlinreed13"
+local AUTO_UNLOCK_USERS = {
+	"davlinreed13",
+	"Stfztsydtsts3334",
+	"quixotic812"
+}
 
--- Auto unlock
-if player.Name:lower() ~= AUTO_UNLOCK:lower() then
+-- Auto unlock check
+local unlocked = false
+for _, name in ipairs(AUTO_UNLOCK_USERS) do
+	if player.Name:lower() == name:lower() then
+		unlocked = true
+		break
+	end
+end
+
+-- 🔔 Notify if auto-unlocked
+if unlocked then
+	task.spawn(function()
+		task.wait(1)
+		local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+		local frame = Instance.new("Frame", gui)
+
+		frame.Size = UDim2.fromOffset(280, 50)
+		frame.Position = UDim2.new(0.5, -140, 0.15, 0)
+		frame.BackgroundColor3 = Color3.fromRGB(20,20,30)
+		frame.BackgroundTransparency = 0.2
+		frame.BorderSizePixel = 0
+		Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 14)
+
+		local label = Instance.new("TextLabel", frame)
+		label.Size = UDim2.fromScale(1,1)
+		label.BackgroundTransparency = 1
+		label.Text = "🔓 Auto-Unlocked: "..player.Name
+		label.Font = Enum.Font.GothamBold
+		label.TextScaled = true
+		label.TextColor3 = Color3.fromRGB(130,200,255)
+
+		task.delay(2.5, function()
+			frame:Destroy()
+		end)
+	end)
+else
+	-- Password GUI (unchanged)
 	local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 	gui.Name = "PasswordGui"
 
@@ -108,7 +147,7 @@ end
 
 -- ===================== MAIN BUTTON =====================
 local mainButton = Instance.new("TextButton", screenGui)
-mainButton.Size = UDim2.fromOffset(60,60) -- square button
+mainButton.Size = UDim2.fromOffset(60,60)
 mainButton.Position = UDim2.fromOffset(200,200)
 mainButton.Text = "F"
 mainButton.TextColor3 = Color3.fromRGB(130,200,255)
@@ -153,7 +192,6 @@ local function createButton(text, y, parent)
 	b.Font = Enum.Font.GothamBold
 	b.TextSize = 16
 	Instance.new("UICorner",b).CornerRadius = UDim.new(0,15)
-	-- Glowy Outline
 	local stroke = Instance.new("UIStroke", b)
 	stroke.Color = Color3.fromRGB(130,200,255)
 	stroke.Thickness = 2
@@ -184,7 +222,7 @@ createButton("Kick 🤞",100,menu).MouseButton1Click:Connect(function()
 	player:Kick("bye bye ✌")
 end)
 
--- ===================== PLAYER ESP (Glowy) =====================
+-- ===================== PLAYER ESP =====================
 local espEnabled = true
 local espFolder = Instance.new("Folder",workspace)
 espFolder.Name = "PlayerESP"
@@ -194,7 +232,6 @@ local function createESPForPlayer(plr)
 	if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
 	local hrp = plr.Character.HumanoidRootPart
 
-	-- Box
 	local box = Instance.new("BoxHandleAdornment")
 	box.Adornee = hrp
 	box.Size = Vector3.new(4,6,2)
@@ -202,10 +239,7 @@ local function createESPForPlayer(plr)
 	box.Transparency = 0.3
 	box.AlwaysOnTop = true
 	box.Parent = espFolder
-	local outline = Instance.new("UIStroke", box) -- optional extra glow
-	outline.Color = Color3.fromRGB(130,200,255)
 
-	-- Name Billboard
 	local billboard = Instance.new("BillboardGui")
 	billboard.Adornee = hrp
 	billboard.Size = UDim2.new(0,200,0,50)
@@ -246,7 +280,7 @@ createButton("Player ESP",150,menu).MouseButton1Click:Connect(function()
 	notify("Player ESP: "..(espEnabled and "ON" or "OFF"))
 end)
 
--- ===================== X-RAY (Your Version) =====================
+-- ===================== X-RAY =====================
 local xrayOn = false
 local xrayCache = {}
 createButton("X-Ray 👀",200,menu).MouseButton1Click:Connect(function()
@@ -332,7 +366,6 @@ local coolingDown = false
 
 local ragButton = createButton("Ragdoll (R)",310,menu)
 
--- cooldown bar
 local barBG = Instance.new("Frame", ragButton)
 barBG.Size = UDim2.new(1, -10, 0, 6)
 barBG.Position = UDim2.new(0, 5, 1, -8)
@@ -406,4 +439,4 @@ mainButton.MouseButton1Click:Connect(function()
 	menu.Visible = not menu.Visible
 end)
 
-print("✅ Fall's Hub Loaded (Password, Auto-Unlock, ESP, Glowy X-Ray, Speed, Zoom, Ragdoll, Kick, Allow Friends)")
+print("✅ Fall's Hub Loaded (Password, Multi-User Auto-Unlock, ESP, Glowy X-Ray, Speed, Zoom, Ragdoll, Kick, Allow Friends)")
