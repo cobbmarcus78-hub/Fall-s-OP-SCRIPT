@@ -1,6 +1,6 @@
 -- ======================================================
--- FALL'S HUB – FULL UPDATED SCRIPT
--- Password Protected + Auto Unlock + Glowy UI + Optimized ESP + X-Ray
+-- FALL'S HUB – FULL UPDATED SCRIPT + BAT AUTO HIT
+-- Password Protected + Auto Unlock + Glowy UI + Optimized ESP + X-Ray + Bat Spam
 -- ======================================================
 
 -- ===================== SERVICES =====================
@@ -124,8 +124,8 @@ outline.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
 -- ===================== MAIN MENU =====================
 local menu = Instance.new("Frame", screenGui)
-menu.Size = UDim2.new(0,220,0,400)
-menu.Position = UDim2.new(0.58,-110,0.5,-200)
+menu.Size = UDim2.new(0,220,0,500)
+menu.Position = UDim2.new(0.58,-110,0.5,-250)
 menu.BackgroundColor3 = Color3.fromRGB(15,15,25)
 menu.BorderSizePixel = 0
 menu.Visible = false
@@ -166,7 +166,6 @@ allowButton.MouseButton1Click:Connect(function()
     ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Net"):WaitForChild("RE/PlotService/ToggleFriends"):FireServer()
     notify("Allow Friends: "..(allowFriends and "ON" or "OFF"))
 end)
-
 UserInputService.InputBegan:Connect(function(input,gpe)
     if gpe then return end
     if input.KeyCode == Enum.KeyCode.F then
@@ -233,7 +232,8 @@ Players.PlayerRemoving:Connect(function(plr)
     refreshESP()
 end)
 
-createButton("Player ESP",150,menu).MouseButton1Click:Connect(function()
+local espButton = createButton("Player ESP",150,menu)
+espButton.MouseButton1Click:Connect(function()
     espEnabled = not espEnabled
     refreshESP()
     notify("Player ESP: "..(espEnabled and "ON" or "OFF"))
@@ -242,7 +242,8 @@ end)
 -- ===================== X-RAY =====================
 local xrayOn = false
 local xrayCache = {}
-createButton("X-Ray 👀",200,menu).MouseButton1Click:Connect(function()
+local xrayButton = createButton("X-Ray 👀",200,menu)
+xrayButton.MouseButton1Click:Connect(function()
     xrayOn = not xrayOn
     if xrayOn then
         for _,p in ipairs(workspace:GetDescendants()) do
@@ -264,9 +265,9 @@ createButton("X-Ray 👀",200,menu).MouseButton1Click:Connect(function()
     notify("X-Ray: "..(xrayOn and "ON" or "OFF"))
 end)
 
--- ===================== SPEED BOOSTER (Q) – WITH JUMP =====================
+-- ===================== SPEED BOOSTER (Q) =====================
 local speedActive = false
-local speed = 28
+local speed = 28.4
 local TARGET_JUMP = 83
 local originalJump = 50
 
@@ -285,7 +286,6 @@ player.CharacterAdded:Connect(function(char)
 end)
 
 local speedButton = createButton("Speed Booster (Q)",260,menu)
-
 local function toggleSpeed()
     speedActive = not speedActive
     notify("Speed Booster: "..(speedActive and "ON" or "OFF"))
@@ -323,6 +323,12 @@ end)
 -- ===================== ZOOM BOOSTER (Z) =====================
 local zoomActive = false
 local zoomSpeed = 55
+local zoomButton = createButton("Zoom (Z)",300,menu)
+zoomButton.MouseButton1Click:Connect(function()
+    zoomActive = not zoomActive
+    notify("Zoom: "..(zoomActive and "ON" or "OFF"))
+end)
+
 UserInputService.InputBegan:Connect(function(input,gpe)
     if gpe then return end
     if input.KeyCode == Enum.KeyCode.Z then
@@ -348,7 +354,7 @@ end)
 -- ===================== RAGDOLL (R) =====================
 local COOLDOWN = 30
 local coolingDown = false
-local ragButton = createButton("Ragdoll (R)",310,menu)
+local ragButton = createButton("Ragdoll (R)",340,menu)
 
 local barBG = Instance.new("Frame", ragButton)
 barBG.Size = UDim2.new(1, -10, 0, 6)
@@ -388,6 +394,50 @@ UserInputService.InputBegan:Connect(function(input,gpe)
     if input.KeyCode == Enum.KeyCode.R then ragdollSelf() end
 end)
 
+-- ===================== BAT AUTO HIT =====================
+local TOOL_NAME = "Bat"
+local batRunning = false
+
+local function getChar()
+    return player.Character or player.CharacterAdded:Wait()
+end
+
+local function findBat()
+    local char = getChar()
+    for _, v in ipairs(player.Backpack:GetChildren()) do
+        if v:IsA("Tool") and v.Name == TOOL_NAME then
+            return v
+        end
+    end
+    for _, v in ipairs(char:GetChildren()) do
+        if v:IsA("Tool") and v.Name == TOOL_NAME then
+            return v
+        end
+    end
+end
+
+local function startBatSpam()
+    task.spawn(function()
+        while batRunning do
+            local char = getChar()
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            local bat = findBat()
+            if bat and humanoid then
+                humanoid:EquipTool(bat)
+                pcall(function() bat:Activate() end)
+            end
+            task.wait(0.08)
+        end
+    end)
+end
+
+local batButton = createButton("Bat Auto Hit",380,menu)
+batButton.MouseButton1Click:Connect(function()
+    batRunning = not batRunning
+    batButton.Text = batRunning and "• Bat Auto Hit (ON)" or "• Bat Auto Hit (OFF)"
+    if batRunning then startBatSpam() end
+end)
+
 -- ===================== DRAG FUNCTION =====================
 local function drag(gui)
     local dragging,start,pos
@@ -416,4 +466,4 @@ mainButton.MouseButton1Click:Connect(function()
     menu.Visible = not menu.Visible
 end)
 
-print("✅ Fall's Hub Loaded (Password, Auto-Unlock, ESP, Glowy X-Ray, Speed + Jump, Zoom, Ragdoll, Kick, Allow Friends)")
+print("✅ Fall's Hub + All Buttons + Bat Auto Hit Loaded")
