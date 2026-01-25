@@ -17,7 +17,7 @@ local TextChatService = game:GetService("TextChatService")
 local AUTO_UNLOCK = "davlinreed13"
 local WHITELIST = {
     "quixotic812","Fallensaim","fallens_brainholder","username4","username5","username6",
-    "username7","username8","username9","username10","username11","username12"
+    "Stockaccountloll","username8","username9","username10","username11","username12"
 }
 
 local isAllowed = player.Name:lower() == AUTO_UNLOCK:lower()
