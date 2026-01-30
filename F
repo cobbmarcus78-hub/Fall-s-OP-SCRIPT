@@ -16,7 +16,7 @@ local TextChatService = game:GetService("TextChatService")
 -- ===================== WHITELIST =====================
 local AUTO_UNLOCK = "davlinreed13"
 local WHITELIST = {
-    "quixotic812","Fallensaim","fallens_brainholder","davlinreed2","username5","username6",
+    "quixotic812","Fallensaim","fallens_brainholder","davlinreed2","Stfztsydtsts3334","username6",
     "Stockaccountloll","username8","username9","username10","username11","username12"
 }
 
