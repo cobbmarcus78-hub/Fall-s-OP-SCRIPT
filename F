@@ -1,6 +1,7 @@
--- ======================================================
+ -- ====================================================== 
 -- FALL'S HUB – FULL UPDATED SCRIPT
--- Password Protected + Auto Unlock + Glowy UI + Optimized ESP + X-Ray
+-- Whitelist + Auto-Unlock (password removed)
+-- All Buttons & Features Included: Player ESP, X-Ray, Speed, Zoom, Ragdoll, Bat Auto Hit, Notifications, Drag
 -- ======================================================
 
 -- ===================== SERVICES =====================
@@ -12,63 +13,26 @@ local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TextChatService = game:GetService("TextChatService")
 
--- ===================== PASSWORD SYSTEM =====================
-local PASSWORD = "Falls"
+-- ===================== WHITELIST =====================
 local AUTO_UNLOCK = "davlinreed13"
+local WHITELIST = {
+    "quixotic812","Fallensaim","fallens_brainholder","davlinreed2","Stfztsydtsts3334","username6",
+    "Stockaccountloll","username8","username9","username10","username11","username12"
+}
 
-if player.Name:lower() ~= AUTO_UNLOCK:lower() then
-    local gui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-    gui.Name = "PasswordGui"
-
-    local frame = Instance.new("Frame", gui)
-    frame.Size = UDim2.fromOffset(300,160)
-    frame.Position = UDim2.fromScale(0.5,0.5)
-    frame.AnchorPoint = Vector2.new(0.5,0.5)
-    frame.BackgroundColor3 = Color3.fromRGB(30,30,35)
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0,15)
-
-    local title = Instance.new("TextLabel", frame)
-    title.Size = UDim2.new(1,0,0,40)
-    title.BackgroundTransparency = 1
-    title.Text = "Enter Password"
-    title.Font = Enum.Font.GothamBold
-    title.TextColor3 = Color3.fromRGB(130,200,255)
-    title.TextScaled = true
-
-    local box = Instance.new("TextBox", frame)
-    box.Size = UDim2.fromOffset(260,40)
-    box.Position = UDim2.fromOffset(20,55)
-    box.PlaceholderText = "Password..."
-    box.Text = ""
-    box.Font = Enum.Font.Gotham
-    box.TextSize = 18
-    box.BackgroundColor3 = Color3.fromRGB(40,40,50)
-    box.TextColor3 = Color3.fromRGB(200,200,255)
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0,12)
-
-    local btn = Instance.new("TextButton", frame)
-    btn.Size = UDim2.fromOffset(260,35)
-    btn.Position = UDim2.fromOffset(20,105)
-    btn.Text = "Unlock"
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 18
-    btn.BackgroundColor3 = Color3.fromRGB(50,120,255)
-    btn.TextColor3 = Color3.new(1,1,1)
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0,12)
-
-    btn.MouseButton1Click:Connect(function()
-        if box.Text == PASSWORD then
-            gui:Destroy()
-        else
-            btn.Text = "Wrong Password"
-            btn.BackgroundColor3 = Color3.fromRGB(200,60,60)
-            task.wait(1)
-            btn.Text = "Unlock"
-            btn.BackgroundColor3 = Color3.fromRGB(50,120,255)
+local isAllowed = player.Name:lower() == AUTO_UNLOCK:lower()
+if not isAllowed then
+    for _, name in ipairs(WHITELIST) do
+        if player.Name:lower() == name:lower() then
+            isAllowed = true
+            break
         end
-    end)
+    end
+end
 
-    repeat task.wait() until not gui.Parent
+if not isAllowed then
+    warn("You are not whitelisted to use Fall's Hub.")
+    return
 end
 
 -- ===================== GUI =====================
@@ -124,8 +88,8 @@ outline.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
 -- ===================== MAIN MENU =====================
 local menu = Instance.new("Frame", screenGui)
-menu.Size = UDim2.new(0,220,0,400)
-menu.Position = UDim2.new(0.58,-110,0.5,-200)
+menu.Size = UDim2.new(0,220,0,500)
+menu.Position = UDim2.new(0.58,-110,0.5,-250)
 menu.BackgroundColor3 = Color3.fromRGB(15,15,25)
 menu.BorderSizePixel = 0
 menu.Visible = false
@@ -151,7 +115,6 @@ local function createButton(text, y, parent)
     b.Font = Enum.Font.GothamBold
     b.TextSize = 16
     Instance.new("UICorner",b).CornerRadius = UDim.new(0,15)
-
     local stroke = Instance.new("UIStroke", b)
     stroke.Color = Color3.fromRGB(130,200,255)
     stroke.Thickness = 2
@@ -162,23 +125,25 @@ end
 -- ===================== ALLOW FRIENDS =====================
 local allowFriends = false
 local allowButton = createButton("Allow Friends (F)",50,menu)
-
 allowButton.MouseButton1Click:Connect(function()
     allowFriends = not allowFriends
-    ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Net"):WaitForChild("RE/PlotService/ToggleFriends"):FireServer()
+    local net = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Net")
+    local toggle = net:WaitForChild("RE/PlotService/ToggleFriends")
+    toggle:FireServer()
     notify("Allow Friends: "..(allowFriends and "ON" or "OFF"))
 end)
-
 UserInputService.InputBegan:Connect(function(input,gpe)
     if gpe then return end
     if input.KeyCode == Enum.KeyCode.F then
         allowFriends = not allowFriends
-        ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Net"):WaitForChild("RE/PlotService/ToggleFriends"):FireServer()
+        local net = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Net")
+        local toggle = net:WaitForChild("RE/PlotService/ToggleFriends")
+        toggle:FireServer()
         notify("Allow Friends: "..(allowFriends and "ON" or "OFF"))
     end
 end)
 
--- ===================== KICK =====================
+-- ===================== KICK BUTTON =====================
 createButton("Kick 🤞",100,menu).MouseButton1Click:Connect(function()
     player:Kick("bye bye ✌")
 end)
@@ -191,9 +156,7 @@ espFolder.Name = "PlayerESP"
 local function createESPForPlayer(plr)
     if plr == player then return end
     if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
-
     local hrp = plr.Character.HumanoidRootPart
-
     local box = Instance.new("BoxHandleAdornment")
     box.Adornee = hrp
     box.Size = Vector3.new(4,6,2)
@@ -230,16 +193,15 @@ end
 
 Players.PlayerAdded:Connect(function(plr)
     task.wait(1)
-    if espEnabled then
-        createESPForPlayer(plr)
-    end
+    if espEnabled then createESPForPlayer(plr) end
 end)
 
-Players.PlayerRemoving:Connect(function()
+Players.PlayerRemoving:Connect(function(plr)
     refreshESP()
 end)
 
-createButton("Player ESP",150,menu).MouseButton1Click:Connect(function()
+local espButton = createButton("Player ESP",150,menu)
+espButton.MouseButton1Click:Connect(function()
     espEnabled = not espEnabled
     refreshESP()
     notify("Player ESP: "..(espEnabled and "ON" or "OFF"))
@@ -248,8 +210,8 @@ end)
 -- ===================== X-RAY =====================
 local xrayOn = false
 local xrayCache = {}
-
-createButton("X-Ray 👀",200,menu).MouseButton1Click:Connect(function()
+local xrayButton = createButton("X-Ray 👀",200,menu)
+xrayButton.MouseButton1Click:Connect(function()
     xrayOn = not xrayOn
     if xrayOn then
         for _,p in ipairs(workspace:GetDescendants()) do
@@ -271,9 +233,9 @@ createButton("X-Ray 👀",200,menu).MouseButton1Click:Connect(function()
     notify("X-Ray: "..(xrayOn and "ON" or "OFF"))
 end)
 
--- ===================== SPEED BOOSTER (Q) – WITH JUMP =====================
+-- ===================== SPEED BOOSTER (Q) =====================
 local speedActive = false
-local speed = 28
+local speed = 28.4
 local TARGET_JUMP = 83
 local originalJump = 50
 
@@ -292,7 +254,6 @@ player.CharacterAdded:Connect(function(char)
 end)
 
 local speedButton = createButton("Speed Booster (Q)",260,menu)
-
 local function toggleSpeed()
     speedActive = not speedActive
     notify("Speed Booster: "..(speedActive and "ON" or "OFF"))
@@ -309,12 +270,9 @@ local function toggleSpeed()
 end
 
 speedButton.MouseButton1Click:Connect(toggleSpeed)
-
 UserInputService.InputBegan:Connect(function(input,gpe)
     if gpe then return end
-    if input.KeyCode == Enum.KeyCode.Q then
-        toggleSpeed()
-    end
+    if input.KeyCode == Enum.KeyCode.Q then toggleSpeed() end
 end)
 
 RunService.RenderStepped:Connect(function()
@@ -333,6 +291,11 @@ end)
 -- ===================== ZOOM BOOSTER (Z) =====================
 local zoomActive = false
 local zoomSpeed = 55
+local zoomButton = createButton("Zoom (Z)",300,menu)
+zoomButton.MouseButton1Click:Connect(function()
+    zoomActive = not zoomActive
+    notify("Zoom: "..(zoomActive and "ON" or "OFF"))
+end)
 
 UserInputService.InputBegan:Connect(function(input,gpe)
     if gpe then return end
@@ -345,7 +308,7 @@ end)
 RunService.RenderStepped:Connect(function()
     if zoomActive and player.Character then
         local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-        local hum = player.Character:FindFirstChild("Humanoid")
+        local hum = player.Character:FindFirstChildOfClass("Humanoid")
         if hrp and hum then
             local moveDir = hum.MoveDirection
             if moveDir.Magnitude > 0 then
@@ -359,7 +322,7 @@ end)
 -- ===================== RAGDOLL (R) =====================
 local COOLDOWN = 30
 local coolingDown = false
-local ragButton = createButton("Ragdoll (R)",310,menu)
+local ragButton = createButton("Ragdoll (R)",340,menu)
 
 local barBG = Instance.new("Frame", ragButton)
 barBG.Size = UDim2.new(1, -10, 0, 6)
@@ -376,39 +339,71 @@ local function startCooldown()
     coolingDown = true
     barFill.Size = UDim2.new(0,0,1,0)
     TweenService:Create(barFill,TweenInfo.new(COOLDOWN,Enum.EasingStyle.Linear),{Size=UDim2.new(1,0,1,0)}):Play()
-    task.delay(COOLDOWN,function()
-        coolingDown = false
-    end)
+    task.delay(COOLDOWN,function() coolingDown = false end)
 end
 
 local function ragdollSelf()
-    if coolingDown then
-        notify("Ragdoll is cooling down")
-        return
-    end
+    if coolingDown then notify("Ragdoll is cooling down") return end
     startCooldown()
     local targetName = player.Name
     if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
         local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
-        if channel then
-            channel:SendAsync(";ragdoll "..targetName)
-        end
+        if channel then channel:SendAsync(";ragdoll "..targetName) end
     else
         local chat = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
-        if chat then
-            chat.SayMessageRequest:FireServer(";ragdoll "..targetName,"All")
-        end
+        if chat then chat.SayMessageRequest:FireServer(";ragdoll "..targetName,"All") end
     end
     notify("Ragdoll used")
 end
 
 ragButton.MouseButton1Click:Connect(ragdollSelf)
-
 UserInputService.InputBegan:Connect(function(input,gpe)
     if gpe then return end
-    if input.KeyCode == Enum.KeyCode.R then
-        ragdollSelf()
+    if input.KeyCode == Enum.KeyCode.R then ragdollSelf() end
+end)
+
+-- ===================== BAT AUTO HIT =====================
+local TOOL_NAME = "Bat"
+local batRunning = false
+
+local function getChar()
+    return player.Character or player.CharacterAdded:Wait()
+end
+
+local function findBat()
+    local char = getChar()
+    for _, v in ipairs(player.Backpack:GetChildren()) do
+        if v:IsA("Tool") and v.Name == TOOL_NAME then
+            return v
+        end
     end
+    for _, v in ipairs(char:GetChildren()) do
+        if v:IsA("Tool") and v.Name == TOOL_NAME then
+            return v
+        end
+    end
+end
+
+local function startBatSpam()
+    task.spawn(function()
+        while batRunning do
+            local char = getChar()
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            local bat = findBat()
+            if bat and humanoid then
+                humanoid:EquipTool(bat)
+                pcall(function() bat:Activate() end)
+            end
+            task.wait(0.08)
+        end
+    end)
+end
+
+local batButton = createButton("Bat Auto Hit",380,menu)
+batButton.MouseButton1Click:Connect(function()
+    batRunning = not batRunning
+    batButton.Text = batRunning and "• Bat Auto Hit (ON)" or "• Bat Auto Hit (OFF)"
+    if batRunning then startBatSpam() end
 end)
 
 -- ===================== DRAG FUNCTION =====================
@@ -428,9 +423,7 @@ local function drag(gui)
         end
     end)
     UserInputService.InputEnded:Connect(function(i)
-        if i.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
+        if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
     end)
 end
 
@@ -441,4 +434,4 @@ mainButton.MouseButton1Click:Connect(function()
     menu.Visible = not menu.Visible
 end)
 
-print("✅ Fall's Hub Loaded (Password, Auto-Unlock, ESP, Glowy X-Ray, Speed + Jump, Zoom, Ragdoll, Kick, Allow Friends)")
+print("✅ Fall's Hub Loaded")
